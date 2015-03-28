@@ -4,10 +4,13 @@
 # but you can also edit it by hand.
 
 standard-app-packages
-autopublish
 insecure
 mizzao:bootstrap-3
 jquery
 underscore
 coffeescript
 
+marcinn:paperjs
+mrt:datatables
+d3js:d3
+perak:markdown
