@@ -52,6 +52,10 @@ body {
   filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#61000000', endColorstr='#61000000',GradientType=1 ); /* IE6-9 */
 }
 
+#panel a {
+  color: #44AAFF;
+}
+
 .textdesc tr{
   padding-top:10px;
 }
