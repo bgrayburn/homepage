@@ -4,8 +4,10 @@
     <div class="col-lg-6 col-lg-offset-0 col-md-8 col-md-offset-2 col-xs-12"><img src="images/mapred.svg" style="width:100%;"></div>
     <div class="col-lg-6 col-lg-offset-0 col-md-8 col-md-offset-2 col-xs-12">
       <div class="col-xs-12 textdesc">
-        <p>I've put a sample MapReduce job and <a href="https://github.com/bgrayburn/itemSetCount" target="_blank">code up on Github here</a> using the Python multiprocessing library and MongoDB to take do local MapReduce jobs using multicore processing to create paraellelism.
+        <p>I've put a sample MapReduce job and <a href="https://github.com/bgrayburn/itemSetCount" target="_blank">code up on Github here</a>. It uses the Python multiprocessing library and MongoDB to run a local job using multicore processing to take advantage of parallelism.
         </p>
+      </div>
+      <div class="col-xs-12 textdesc">
         <p>
           If a process can be described in the steps pictured, batches made from the complete dataset can be run in multiple subprocesses that use multiple CPU cores for greater performance. Common examples of a process fitting this model included:
         </p>
@@ -19,11 +21,6 @@
       <div class="col-xs-12 textdesc">
         <p>
           To implement this kind of setup, I use <a href="https://spark.apache.org/" target="_blank">Spark</a> for Scala or <a href="https://github.com/Yelp/mrjob" target="_blank">mrjob</a> for Python, depending on the complexity of the job.
-        </p>
-      </div>
-      <div class="col-xs-12 textdesc">
-        <p>
-          The first time I had to count common combinations of items in a large number of transactions, I decided I wanted to build a mapreduce job wihtout libraries to really understand what was happening. I've made the <a href="https://github.com/bgrayburn/itemSetCount" target="_blank">code available here</a>.
         </p>
       </div>
     </div>

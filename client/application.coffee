@@ -16,7 +16,7 @@ Session.page_tree =
                             #"Pattern Extraction":"tree_graph"
                             "Modeling": "gdp"
                             "Map Reduce":"mapred"
-                          "Perception":
+                          "Interaction":
                             "eyeCandy":"eyecandy"
 
 #returns value of page in tree
