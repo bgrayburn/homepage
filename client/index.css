@@ -69,3 +69,11 @@ body {
   width: 10vw;
   margin: 15px auto;
 }
+
+.centered-image-container {
+  margin: 15px auto;
+}
+
+.centered-image {
+  width:100%;
+}
