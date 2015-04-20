@@ -1,5 +1,3 @@
-Meteor.subscribe("sp500")
-
 if Session.get("cur_page")==undefined
   Session.set("cur_page", ["Brian Rayburn", "About"])
 

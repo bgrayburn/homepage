@@ -1,4 +1,6 @@
 Template.scatter_table.rendered = ->
+  Meteor.subscribe("sp500")
+  console.log("there are " + SP500.find().count().toString() + " entries in SP500")
   width = 960
   size = 150
   padding = 19.5
@@ -13,7 +15,9 @@ Template.scatter_table.rendered = ->
   xAxis = d3.svg.axis().scale(x).orient('bottom').ticks(5)
   yAxis = d3.svg.axis().scale(y).orient('left').ticks(5)
   color = d3.scale.category10()
-  data = Session.get("cur_data")
+  #data = Session.get("cur_data")
+  data = SP500.find({},{fields:{_id:0, Sector:0, Symbol:0, "SEC Filings":0, Name:0}}).fetch()
+  Session.set("cur_data", data)
   domainByTrait = {}
   traits = d3.keys(data[0]).filter((d) ->
     d != 'species'
