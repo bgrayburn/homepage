@@ -1,0 +1,13 @@
+[Unit]
+Description=bgrayburns portfolio
+After=docker.service
+Requires=mongodb.service
+
+[Service]
+TimeoutStartSec=0
+ExecStartPre=-/usr/bin/docker kill homepage
+ExecStartPre=-/usr/bin/docker rm homepage
+ExecStart=/usr/bin/docker run -it --name=homepage --link mongodb:mongodb --rm -p 80:80 -v /home/core/homepage/app:/app -e "MONGO_URL=mongodb://mongodb/meteor" danieldent/meteor meteor -p 80
+
+[Install]
+WantedBy=multi-user.target
