@@ -5,17 +5,17 @@ Session.page_tree =
                     "Brian Rayburn":
                         "About":"about"
                         "Portfolio":
-                          "Visualization":
-                            "High Dimensions":"scatter_table"
-                            #Frequency/Spectral":"tree_graph"
-                            "Geospatial":"geospatial"
-                          "Analysis":
-                            #"Machine Learning":"tree_graph"
-                            #"Pattern Extraction":"tree_graph"
-                            "Modeling": "gdp"
+                          "GDP":
+                            "Summary":"blank"
+                            "Notebook":"gdpExploreNotebook"
+                          "Baltimore":"geospatial"
+                          #  "Crime":"blank"
+                          #  "Surveillance":"geospatial"
+                          "Concepts":
                             "Map Reduce":"mapred"
-                          "Interaction":
+                          "Art":
                             "eyeCandy":"eyecandy"
+
 
 #returns value of page in tree
 Session.tree_return = (page, tree)->
