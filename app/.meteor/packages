@@ -5,6 +5,7 @@
 
 standard-app-packages
 insecure
+react
 mizzao:bootstrap-3
 jquery
 underscore

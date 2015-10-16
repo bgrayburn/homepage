@@ -42,7 +42,7 @@ body {
   font: Verdana;
   text-align: center;
   margin-top: 20px;
-  padding: 15px;
+  padding: 10px;
   background: -moz-linear-gradient(left,  rgba(0,0,0,0.38) 0%, rgba(76,76,76,0.77) 31%, rgba(76,76,76,0.77) 69%, rgba(0,0,0,0.38) 100%); /* FF3.6+ */
   background: -webkit-gradient(linear, left top, right top, color-stop(0%,rgba(0,0,0,0.38)), color-stop(31%,rgba(76,76,76,0.77)), color-stop(69%,rgba(76,76,76,0.77)), color-stop(100%,rgba(0,0,0,0.38))); /* Chrome,Safari4+ */
   background: -webkit-linear-gradient(left,  rgba(0,0,0,0.38) 0%,rgba(76,76,76,0.77) 31%,rgba(76,76,76,0.77) 69%,rgba(0,0,0,0.38) 100%); /* Chrome10+,Safari5.1+ */

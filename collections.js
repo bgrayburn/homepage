@@ -1,1 +1,0 @@
-SP500 = new Mongo.Collection("sp500");

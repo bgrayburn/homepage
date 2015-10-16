@@ -6,11 +6,11 @@ Session.page_tree =
                         "About":"about"
                         "Portfolio":
                           "GDP":
-                            "Summary":"blank"
+                            "Summary":"gdp"
                             "Notebook":"gdpExploreNotebook"
-                          "Baltimore":"geospatial"
-                          #  "Crime":"blank"
-                          #  "Surveillance":"geospatial"
+                          "Baltimore":
+                            "Crime":"crime"
+                            "Surveillance":"geospatial"
                           "Concepts":
                             "Map Reduce":"mapred"
                           "Art":
@@ -44,3 +44,12 @@ Session.find_elem = (elem, tree) ->
 
 if Session.get("cur_data")==undefined
   Session.set("cur_data", "")
+
+#cascade down page tree when cur_page is set, always fall to a leaf
+Tracker.autorun ->
+  cur_page = Session.get("cur_page")
+  sub_tree = Session.tree_return(cur_page, Session.page_tree)
+  switch typeof(sub_tree)
+    when 'object'
+      first_child = _.keys(sub_tree)[0]
+      Session.set("cur_page", cur_page.concat([first_child]))
