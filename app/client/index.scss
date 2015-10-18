@@ -77,3 +77,13 @@ body {
 .centered-image {
   width:100%;
 }
+
+.image-panel {
+  height:100%;
+  overflow:hidden;
+
+  .image-panel-image {
+    width:100%;
+    position:absolute;
+  }
+}

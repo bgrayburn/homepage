@@ -10,7 +10,7 @@ Session.page_tree =
                             "Notebook":"gdpExploreNotebook"
                           "Baltimore":
                             "Crime":"crime"
-                            "Surveillance":"geospatial"
+                            "Cameras":"geospatial"
                           "Concepts":
                             "Map Reduce":"mapred"
                           "Art":
