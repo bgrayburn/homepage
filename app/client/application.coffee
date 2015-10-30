@@ -9,7 +9,7 @@ Session.page_tree =
                             "GDP":
                               "Summary":"gdp"
                               "Exploratory":"gdpExploreNotebook"
-                              "Model":"gdpModelNotebook"
+                              #"Model":"gdpModelNotebook"
                             "Parellel Computation":"mapred"
                           "Visualization":
                             "Baltimore":
