@@ -5,14 +5,18 @@ Session.page_tree =
                     "Brian Rayburn":
                         "About":"about"
                         "Portfolio":
-                          "GDP":
-                            "Summary":"gdp"
-                            "Notebook":"gdpExploreNotebook"
-                          "Baltimore":
-                            "Crime":"crime"
-                            "Cameras":"geospatial"
-                          "Concepts":
-                            "Map Reduce":"mapred"
+                          "Analysis":
+                            "GDP":
+                              "Summary":"gdp"
+                              "Exploratory":"gdpExploreNotebook"
+                              "Model":"gdpModelNotebook"
+                            "Parellel Computation":"mapred"
+                          "Visualization":
+                            "Baltimore":
+                              "Crime":"crime"
+                              "Cameras":"geospatial"
+                          "Web":
+                            "Self Generating Sites":"self_generating_sites"
                           "Art":
                             "eyeCandy":"eyecandy"
 
