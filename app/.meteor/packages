@@ -5,14 +5,16 @@
 
 standard-app-packages
 insecure
-react
+#react
 mizzao:bootstrap-3
 jquery
 underscore
 coffeescript
+#appcache
+okgrow:analytics
 
-marcinn:paperjs
-mrt:datatables
-d3js:d3
-perak:markdown
+#marcinn:paperjs
+#mrt:datatables
+#d3js:d3
+#perak:markdown
 fourseven:scss
