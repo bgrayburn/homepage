@@ -1,5 +1,18 @@
 if Session.get("cur_page")==undefined
-  Session.set("cur_page", ["Brian Rayburn", "About"])
+  start_url = window.location.href
+  Meteor.testURL = start_url
+  unformatted_page = start_url.split("#")
+  if unformatted_page.length > 1
+    formatted_page = unformatted_page[1].split('/').map((e)->e.split("_").join(" "))
+    formatted_page.unshift("Brian Rayburn")
+    Session.set("cur_page", formatted_page)
+  else
+    Session.set("cur_page", ["Brian Rayburn", "About"])
+
+Tracker.autorun ->
+  cur_page = Session.get("cur_page")
+  urlized_cur_page = cur_page.slice(1,cur_page.length).map((e)->e.split(" ").join("_"))
+  window.location.href = "http://localhost:3000/#"+urlized_cur_page.join('/')
 
 Session.page_tree =
                     "Brian Rayburn":
@@ -9,7 +22,7 @@ Session.page_tree =
                             "GDP":
                               "Summary":"gdp"
                               "Exploratory":"gdpExploreNotebook"
-                              #"Model":"gdpModelNotebook"
+                              "Model":"gdpModelNotebook"
                             "Parellel Computation":"mapred"
                           "Visualization":
                             "Baltimore":
@@ -57,3 +70,7 @@ Tracker.autorun ->
     when 'object'
       first_child = _.keys(sub_tree)[0]
       Session.set("cur_page", cur_page.concat([first_child]))
+
+#Manage URL
+#
+#  Session.set("cur_page", ["Brian Rayburn", "About"])

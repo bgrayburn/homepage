@@ -171,12 +171,22 @@ div#notebook {
   <div tabindex="-1" id="notebook" class="border-box-sizing">
     <div class="container" id="notebook-container">
 
+<div class="cell border-box-sizing text_cell rendered">
+<div class="prompt input_prompt">
+</div>
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h1 id="Global-GDP-Data-Tear-Down-(Part-3:-Modeling)">Global GDP Data Tear Down (Part 3: Modeling)<a class="anchor-link" href="#Global-GDP-Data-Tear-Down-(Part-3:-Modeling)">&#182;</a></h1>
+</div>
+</div>
+</div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[1]:</div>
+<div class="prompt input_prompt">In&nbsp;[4]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span class="kn">from</span> <span class="nn">sklearn</span> <span class="k">import</span> <span class="n">linear_model</span>
+<span class="kn">from</span> <span class="nn">sklearn.cross_validation</span> <span class="k">import</span> <span class="n">train_test_split</span>
 <span class="kn">from</span> <span class="nn">pymongo</span> <span class="k">import</span> <span class="n">MongoClient</span>
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 <span class="kn">import</span> <span class="nn">pandas</span>
@@ -189,10 +199,11 @@ div#notebook {
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[51]:</div>
+<div class="prompt input_prompt">In&nbsp;[5]:</div>
 <div class="inner_cell">
     <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span class="k">def</span> <span class="nf">rail</span><span class="p">(</span><span class="n">x</span><span class="p">):</span>
+<div class=" highlight hl-ipython3"><pre><span class="c">#sends values to 1, -1, or zero</span>
+<span class="k">def</span> <span class="nf">rail</span><span class="p">(</span><span class="n">x</span><span class="p">):</span>
     <span class="n">out</span> <span class="o">=</span> <span class="n">x</span>
     <span class="k">if</span> <span class="n">x</span><span class="o">&gt;</span><span class="mi">0</span><span class="p">:</span>
         <span class="n">out</span> <span class="o">=</span> <span class="mi">1</span>
@@ -208,13 +219,14 @@ div#notebook {
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[52]:</div>
+<div class="prompt input_prompt">In&nbsp;[6]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span class="c">#setup db</span>
 <span class="n">mongo</span> <span class="o">=</span> <span class="n">MongoClient</span><span class="p">(</span><span class="s">&quot;mongodb&quot;</span><span class="p">)</span>
 <span class="c">#get all collections prefixed by mongo.analysis.gdp.exploratory</span>
-<span class="n">in_colls</span> <span class="o">=</span> <span class="p">[</span><span class="n">c</span> <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">mongo</span><span class="o">.</span><span class="n">gdp</span><span class="o">.</span><span class="n">collection_names</span><span class="p">()</span> <span class="k">if</span> <span class="n">c</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s">&#39;.&#39;</span><span class="p">)[</span><span class="mi">0</span><span class="p">:</span><span class="mi">2</span><span class="p">]</span><span class="o">==</span><span class="p">[</span><span class="s">&#39;analysis&#39;</span><span class="p">,</span><span class="s">&#39;exploratory&#39;</span><span class="p">]]</span>
+<span class="n">all_colls</span> <span class="o">=</span> <span class="p">[</span><span class="n">c</span> <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">mongo</span><span class="o">.</span><span class="n">gdp</span><span class="o">.</span><span class="n">collection_names</span><span class="p">()</span> <span class="k">if</span> <span class="n">c</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s">&#39;.&#39;</span><span class="p">)[</span><span class="mi">0</span><span class="p">:</span><span class="mi">2</span><span class="p">]</span><span class="o">==</span><span class="p">[</span><span class="s">&#39;analysis&#39;</span><span class="p">,</span><span class="s">&#39;exploratory&#39;</span><span class="p">]]</span>
+<span class="n">in_colls</span> <span class="o">=</span> <span class="p">[</span><span class="n">o</span> <span class="k">for</span> <span class="n">o</span> <span class="ow">in</span> <span class="nb">filter</span><span class="p">(</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">x</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s">&#39;_&#39;</span><span class="p">)[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">!=</span><span class="s">&#39;T&#39;</span><span class="p">,</span> <span class="n">all_colls</span><span class="p">)]</span>
 
 <span class="n">output_coll</span> <span class="o">=</span> <span class="n">mongo</span><span class="o">.</span><span class="n">analysis</span><span class="o">.</span><span class="n">gdp</span><span class="o">.</span><span class="n">model</span>
 </pre></div>
@@ -226,7 +238,7 @@ div#notebook {
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[109]:</div>
+<div class="prompt input_prompt">In&nbsp;[7]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span class="n">logreg</span> <span class="o">=</span> <span class="n">linear_model</span><span class="o">.</span><span class="n">LogisticRegression</span><span class="p">(</span><span class="n">C</span><span class="o">=</span><span class="mi">1</span><span class="n">e5</span><span class="p">)</span>
@@ -242,13 +254,13 @@ div#notebook {
 </div>
 <div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<h1 id="Load-Data">Load Data<a class="anchor-link" href="#Load-Data">&#182;</a></h1>
+<h2 id="Load-and-Format-Data">Load and Format Data<a class="anchor-link" href="#Load-and-Format-Data">&#182;</a></h2>
 </div>
 </div>
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[110]:</div>
+<div class="prompt input_prompt">In&nbsp;[8]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span class="n">in_colls</span>
@@ -262,16 +274,15 @@ div#notebook {
 <div class="output">
 
 
-<div class="output_area"><div class="prompt output_prompt">Out[110]:</div>
+<div class="output_area"><div class="prompt output_prompt">Out[8]:</div>
 
 
 <div class="output_text output_subarea output_execute_result">
 <pre>[&apos;analysis.exploratory.diff_gdp&apos;,
- &apos;analysis.exploratory.diff_gdp_T&apos;,
+ &apos;analysis.exploratory.ecorr_stripped_diff_gdp&apos;,
  &apos;analysis.exploratory.gdp_means&apos;,
  &apos;analysis.exploratory.smooth_stripped_diff_gdp&apos;,
- &apos;analysis.exploratory.stripped_diff_gdp&apos;,
- &apos;analysis.exploratory.stripped_diff_gdp_T&apos;]</pre>
+ &apos;analysis.exploratory.stripped_diff_gdp&apos;]</pre>
 </div>
 
 </div>
@@ -282,7 +293,7 @@ div#notebook {
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[149]:</div>
+<div class="prompt input_prompt">In&nbsp;[9]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span class="n">s_d_gdp_cur</span> <span class="o">=</span> <span class="n">mongo</span><span class="o">.</span><span class="n">gdp</span><span class="p">[</span><span class="s">&#39;analysis.exploratory.stripped_diff_gdp&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">find</span><span class="p">()</span>
@@ -313,7 +324,7 @@ div#notebook {
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[150]:</div>
+<div class="prompt input_prompt">In&nbsp;[10]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span class="n">df</span><span class="o">.</span><span class="n">head</span><span class="p">()</span>
@@ -327,7 +338,7 @@ div#notebook {
 <div class="output">
 
 
-<div class="output_area"><div class="prompt output_prompt">Out[150]:</div>
+<div class="output_area"><div class="prompt output_prompt">Out[10]:</div>
 
 <div class="output_html rendered_html output_subarea output_execute_result">
 <div>
@@ -335,149 +346,149 @@ div#notebook {
   <thead>
     <tr style="text-align: right;">
       <th></th>
-      <th>Germany</th>
-      <th>Cayman Islands</th>
-      <th>Saudi Arabia</th>
-      <th>Honduras</th>
-      <th>Peru</th>
-      <th>Tajikistan</th>
-      <th>Fiji</th>
-      <th>New Caledonia</th>
-      <th>Italy</th>
-      <th>Papua New Guinea</th>
+      <th>Iraq</th>
+      <th>Swaziland</th>
+      <th>Mozambique</th>
+      <th>Hong Kong SAR, China</th>
+      <th>Jamaica</th>
+      <th>Grenada</th>
+      <th>Namibia</th>
+      <th>Thailand</th>
+      <th>Ukraine</th>
+      <th>Eritrea</th>
       <th>...</th>
-      <th>Liberia</th>
-      <th>Maldives</th>
-      <th>Costa Rica</th>
-      <th>Japan</th>
-      <th>Antigua and Barbuda</th>
-      <th>Burkina Faso</th>
-      <th>Uzbekistan</th>
-      <th>Gabon</th>
-      <th>Haiti</th>
-      <th>Gambia, The</th>
+      <th>Peru</th>
+      <th>Morocco</th>
+      <th>Micronesia, Fed Sts</th>
+      <th>Belize</th>
+      <th>Guyana</th>
+      <th>United States</th>
+      <th>Uganda</th>
+      <th>West Bank and Gaza</th>
+      <th>Cote d'Ivoire</th>
+      <th>Botswana</th>
     </tr>
   </thead>
   <tbody>
     <tr>
       <th>1961</th>
-      <td>0.022123</td>
-      <td>0.022123</td>
-      <td>0.022123</td>
-      <td>0.026279</td>
-      <td>0.087429</td>
-      <td>0.022123</td>
-      <td>0.006220</td>
-      <td>0.022123</td>
-      <td>0.093363</td>
-      <td>0.042237</td>
+      <td>0.080569</td>
+      <td>0.184753</td>
+      <td>0.043707</td>
+      <td>0.137158</td>
+      <td>0.065476</td>
+      <td>0.043707</td>
+      <td>0.043707</td>
+      <td>0.090074</td>
+      <td>0.043707</td>
+      <td>0.043707</td>
       <td>...</td>
-      <td>-0.058474</td>
-      <td>0.022123</td>
-      <td>-0.071908</td>
-      <td>0.150095</td>
-      <td>0.022123</td>
-      <td>0.043790</td>
-      <td>0.022123</td>
-      <td>0.147748</td>
-      <td>0.022123</td>
-      <td>0.022123</td>
+      <td>0.113030</td>
+      <td>-0.005658</td>
+      <td>0.043707</td>
+      <td>0.063158</td>
+      <td>0.084118</td>
+      <td>0.035505</td>
+      <td>0.041936</td>
+      <td>0.043707</td>
+      <td>0.116527</td>
+      <td>0.075714</td>
     </tr>
     <tr>
       <th>1962</th>
-      <td>0.036993</td>
-      <td>0.036993</td>
-      <td>0.036993</td>
-      <td>0.050234</td>
-      <td>0.091976</td>
-      <td>0.036993</td>
-      <td>0.014435</td>
-      <td>0.036993</td>
-      <td>0.103936</td>
-      <td>0.045689</td>
+      <td>0.062894</td>
+      <td>0.063184</td>
+      <td>0.058655</td>
+      <td>0.112529</td>
+      <td>0.038168</td>
+      <td>0.058655</td>
+      <td>0.058655</td>
+      <td>0.083071</td>
+      <td>0.058655</td>
+      <td>0.058655</td>
       <td>...</td>
-      <td>0.020146</td>
-      <td>0.036993</td>
-      <td>-0.059959</td>
-      <td>0.110557</td>
-      <td>0.036993</td>
-      <td>0.064851</td>
-      <td>0.036993</td>
-      <td>0.072757</td>
-      <td>0.036993</td>
-      <td>0.036993</td>
+      <td>0.117781</td>
+      <td>0.148729</td>
+      <td>0.058655</td>
+      <td>0.059408</td>
+      <td>0.046679</td>
+      <td>0.069079</td>
+      <td>0.016678</td>
+      <td>0.058655</td>
+      <td>0.041902</td>
+      <td>0.076935</td>
     </tr>
     <tr>
       <th>1963</th>
-      <td>0.047814</td>
-      <td>0.047814</td>
-      <td>0.047814</td>
-      <td>0.022942</td>
-      <td>0.060397</td>
-      <td>0.047814</td>
-      <td>0.017631</td>
-      <td>0.047814</td>
-      <td>0.120566</td>
-      <td>0.035701</td>
+      <td>0.012031</td>
+      <td>0.151516</td>
+      <td>0.068575</td>
+      <td>0.126678</td>
+      <td>0.059246</td>
+      <td>0.068575</td>
+      <td>0.068575</td>
+      <td>0.065385</td>
+      <td>0.068575</td>
+      <td>0.068575</td>
       <td>...</td>
-      <td>0.020240</td>
-      <td>0.047814</td>
-      <td>0.030691</td>
-      <td>0.117329</td>
-      <td>0.047814</td>
-      <td>0.023624</td>
-      <td>0.047814</td>
-      <td>-0.198201</td>
-      <td>0.047814</td>
-      <td>0.047814</td>
+      <td>0.087250</td>
+      <td>0.104484</td>
+      <td>0.068575</td>
+      <td>0.056075</td>
+      <td>-0.109193</td>
+      <td>0.052459</td>
+      <td>0.130070</td>
+      <td>0.068575</td>
+      <td>0.152110</td>
+      <td>0.064237</td>
     </tr>
     <tr>
       <th>1964</th>
-      <td>0.057602</td>
-      <td>0.057602</td>
-      <td>0.057602</td>
-      <td>0.073334</td>
-      <td>0.149265</td>
-      <td>0.057602</td>
-      <td>0.045352</td>
-      <td>0.057602</td>
-      <td>0.078954</td>
-      <td>0.078169</td>
+      <td>0.154702</td>
+      <td>0.166990</td>
+      <td>0.078423</td>
+      <td>0.131738</td>
+      <td>0.079339</td>
+      <td>0.078423</td>
+      <td>0.078423</td>
+      <td>0.089667</td>
+      <td>0.078423</td>
+      <td>0.078423</td>
       <td>...</td>
-      <td>0.064390</td>
-      <td>0.057602</td>
-      <td>0.024108</td>
-      <td>0.140955</td>
-      <td>0.057602</td>
-      <td>0.026103</td>
-      <td>0.057602</td>
-      <td>0.273373</td>
-      <td>0.057602</td>
-      <td>0.057602</td>
+      <td>0.173507</td>
+      <td>0.050420</td>
+      <td>0.078423</td>
+      <td>0.067537</td>
+      <td>0.097634</td>
+      <td>0.068825</td>
+      <td>0.123772</td>
+      <td>0.078423</td>
+      <td>0.173730</td>
+      <td>0.084691</td>
     </tr>
     <tr>
       <th>1965</th>
-      <td>0.066061</td>
-      <td>0.066061</td>
-      <td>0.066061</td>
-      <td>0.074042</td>
-      <td>0.131592</td>
-      <td>0.066061</td>
-      <td>0.019504</td>
-      <td>0.066061</td>
-      <td>0.062792</td>
-      <td>0.094323</td>
+      <td>0.086217</td>
+      <td>0.075404</td>
+      <td>0.086217</td>
+      <td>0.065857</td>
+      <td>0.076336</td>
+      <td>0.086217</td>
+      <td>0.086217</td>
+      <td>0.113879</td>
+      <td>0.086217</td>
+      <td>0.086217</td>
       <td>...</td>
-      <td>0.022540</td>
-      <td>0.066061</td>
-      <td>0.055002</td>
-      <td>0.091456</td>
-      <td>0.066061</td>
-      <td>0.015324</td>
-      <td>0.066061</td>
-      <td>0.031892</td>
-      <td>0.066061</td>
-      <td>0.066061</td>
+      <td>0.156129</td>
+      <td>0.050870</td>
+      <td>0.086217</td>
+      <td>0.096714</td>
+      <td>0.086575</td>
+      <td>0.077854</td>
+      <td>0.334305</td>
+      <td>0.086217</td>
+      <td>-0.001405</td>
+      <td>0.091121</td>
     </tr>
   </tbody>
 </table>
@@ -493,19 +504,25 @@ div#notebook {
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[151]:</div>
+<div class="prompt input_prompt">In&nbsp;[11]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span class="n">labels</span> <span class="o">=</span> <span class="p">[]</span>
 <span class="n">ins</span> <span class="o">=</span> <span class="p">[]</span>
 <span class="n">outs</span> <span class="o">=</span> <span class="p">[]</span>
+<span class="n">num_of_prev_years</span> <span class="o">=</span> <span class="mi">0</span>
 <span class="n">vals</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">values</span>
 <span class="n">ind</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">index</span>
 <span class="n">cols</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">columns</span>
-<span class="k">for</span> <span class="n">row</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="n">vals</span><span class="o">.</span><span class="n">__len__</span><span class="p">()</span><span class="o">-</span><span class="mi">1</span><span class="p">):</span>
+<span class="k">for</span> <span class="n">row</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">num_of_prev_years</span><span class="o">+</span><span class="mi">2</span><span class="p">,</span> <span class="n">vals</span><span class="o">.</span><span class="n">__len__</span><span class="p">()</span><span class="o">-</span><span class="mi">1</span><span class="p">):</span>
     <span class="k">for</span> <span class="n">col</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">vals</span><span class="o">.</span><span class="n">__len__</span><span class="p">()):</span>
         <span class="k">if</span> <span class="n">vals</span><span class="p">[</span><span class="n">row</span><span class="p">][</span><span class="n">col</span><span class="p">]</span><span class="o">!=</span><span class="mi">0</span><span class="p">:</span>
             <span class="n">labels</span><span class="o">.</span><span class="n">append</span><span class="p">([</span><span class="n">ind</span><span class="p">[</span><span class="n">row</span><span class="p">],</span><span class="n">cols</span><span class="p">[</span><span class="n">col</span><span class="p">]])</span>
+            <span class="n">last_year</span> <span class="o">=</span> <span class="n">row</span><span class="o">-</span><span class="mi">1</span>
+            <span class="n">oldest_year</span> <span class="o">=</span> <span class="n">last_year</span> <span class="o">-</span> <span class="n">num_of_prev_years</span>
+            <span class="nb">max</span><span class="p">(</span><span class="n">oldest_year</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+            <span class="n">past_years</span> <span class="o">=</span> <span class="n">vals</span><span class="p">[</span><span class="n">oldest_year</span><span class="p">:</span><span class="n">last_year</span><span class="p">]</span>
+            <span class="c">#ins = np.concatenate(ins, past_years)</span>
             <span class="n">ins</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">vals</span><span class="p">[</span><span class="n">row</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span>
             <span class="n">outs</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">rail</span><span class="p">(</span><span class="n">vals</span><span class="p">[</span><span class="n">row</span><span class="p">][</span><span class="n">col</span><span class="p">]))</span>
 <span class="n">ins</span> <span class="o">=</span> <span class="p">[</span><span class="nb">list</span><span class="p">(</span><span class="n">c</span><span class="p">)</span> <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">ins</span><span class="p">]</span>
@@ -516,13 +533,53 @@ div#notebook {
 </div>
 
 </div>
+<div class="cell border-box-sizing text_cell rendered">
+<div class="prompt input_prompt">
+</div>
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h2 id="Cross-Validation">Cross Validation<a class="anchor-link" href="#Cross-Validation">&#182;</a></h2>
+</div>
+</div>
+</div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[152]:</div>
+<div class="prompt input_prompt">In&nbsp;[12]:</div>
 <div class="inner_cell">
     <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span class="n">railed_outs</span> <span class="o">=</span> <span class="p">[</span><span class="n">rail</span><span class="p">(</span><span class="n">o</span><span class="p">)</span> <span class="k">for</span> <span class="n">o</span> <span class="ow">in</span> <span class="n">outs</span><span class="p">]</span>
-<span class="n">logreg</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">ins</span><span class="p">,</span> <span class="n">railed_outs</span><span class="p">)</span>
+<div class=" highlight hl-ipython3"><pre><span class="c">#cross validation split</span>
+<span class="n">do_cv</span> <span class="o">=</span> <span class="k">True</span>
+<span class="n">in_train</span><span class="p">,</span> <span class="n">in_test</span><span class="p">,</span> <span class="n">out_train</span><span class="p">,</span> <span class="n">out_test</span> <span class="o">=</span> <span class="n">train_test_split</span><span class="p">(</span><span class="n">ins</span><span class="p">,</span> <span class="n">outs</span><span class="p">,</span> <span class="n">test_size</span><span class="o">=.</span><span class="mi">5</span><span class="p">)</span>
+</pre></div>
+
+</div>
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing text_cell rendered">
+<div class="prompt input_prompt">
+</div>
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h2 id="Training">Training<a class="anchor-link" href="#Training">&#182;</a></h2>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[13]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span class="k">if</span> <span class="n">do_cv</span><span class="p">:</span>
+    <span class="n">ot</span> <span class="o">=</span> <span class="n">out_train</span>
+    <span class="n">it</span> <span class="o">=</span> <span class="n">in_train</span>
+<span class="k">else</span><span class="p">:</span>
+    <span class="n">ot</span> <span class="o">=</span> <span class="n">outs</span>
+    <span class="n">it</span> <span class="o">=</span> <span class="n">ins</span>
+    
+<span class="n">railed_outs</span> <span class="o">=</span> <span class="p">[</span><span class="n">rail</span><span class="p">(</span><span class="n">o</span><span class="p">)</span> <span class="k">for</span> <span class="n">o</span> <span class="ow">in</span> <span class="n">ot</span><span class="p">]</span>
+<span class="n">logreg</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">it</span><span class="p">,</span> <span class="n">railed_outs</span><span class="p">)</span>
 </pre></div>
 
 </div>
@@ -533,7 +590,7 @@ div#notebook {
 <div class="output">
 
 
-<div class="output_area"><div class="prompt output_prompt">Out[152]:</div>
+<div class="output_area"><div class="prompt output_prompt">Out[13]:</div>
 
 
 <div class="output_text output_subarea output_execute_result">
@@ -549,19 +606,34 @@ div#notebook {
 </div>
 
 </div>
+<div class="cell border-box-sizing text_cell rendered">
+<div class="prompt input_prompt">
+</div>
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h2 id="Prediction">Prediction<a class="anchor-link" href="#Prediction">&#182;</a></h2>
+</div>
+</div>
+</div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[153]:</div>
+<div class="prompt input_prompt">In&nbsp;[14]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span class="n">errors</span> <span class="o">=</span> <span class="p">[]</span>
-
 <span class="n">preds</span> <span class="o">=</span> <span class="p">[]</span>
-<span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">ins</span><span class="o">.</span><span class="n">__len__</span><span class="p">()):</span>
-      <span class="n">pred</span> <span class="o">=</span> <span class="n">logreg</span><span class="o">.</span><span class="n">predict</span><span class="p">(</span><span class="n">ins</span><span class="p">[</span><span class="n">i</span><span class="p">])[</span><span class="mi">0</span><span class="p">]</span>
+<span class="k">if</span> <span class="n">do_cv</span><span class="p">:</span>
+    <span class="n">it</span> <span class="o">=</span> <span class="n">in_test</span>
+    <span class="n">ot</span> <span class="o">=</span> <span class="n">out_test</span>
+<span class="k">else</span><span class="p">:</span>
+    <span class="n">it</span> <span class="o">=</span> <span class="n">ins</span>
+    <span class="n">ot</span> <span class="o">=</span> <span class="n">outs</span>
+    
+<span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">it</span><span class="o">.</span><span class="n">__len__</span><span class="p">()):</span>
+      <span class="n">pred</span> <span class="o">=</span> <span class="n">logreg</span><span class="o">.</span><span class="n">predict</span><span class="p">(</span><span class="n">it</span><span class="p">[</span><span class="n">i</span><span class="p">])[</span><span class="mi">0</span><span class="p">]</span>
       <span class="n">preds</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">pred</span><span class="p">)</span>
-      <span class="n">errors</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="nb">abs</span><span class="p">(</span><span class="n">outs</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">-</span><span class="n">pred</span><span class="p">)</span><span class="o">/</span><span class="mi">2</span><span class="p">)</span>
-<span class="n">error</span> <span class="o">=</span> <span class="p">(</span><span class="nb">sum</span><span class="p">(</span><span class="n">errors</span><span class="p">)</span><span class="o">/</span><span class="n">ins</span><span class="o">.</span><span class="n">__len__</span><span class="p">())</span>
+      <span class="n">errors</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="nb">abs</span><span class="p">(</span><span class="n">ot</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">-</span><span class="n">pred</span><span class="p">)</span><span class="o">/</span><span class="mi">2</span><span class="p">)</span>
+<span class="n">error</span> <span class="o">=</span> <span class="p">(</span><span class="nb">sum</span><span class="p">(</span><span class="n">errors</span><span class="p">)</span><span class="o">/</span><span class="n">it</span><span class="o">.</span><span class="n">__len__</span><span class="p">())</span>
 </pre></div>
 
 </div>
@@ -571,7 +643,7 @@ div#notebook {
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[154]:</div>
+<div class="prompt input_prompt">In&nbsp;[15]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span class="n">error</span>
@@ -585,11 +657,11 @@ div#notebook {
 <div class="output">
 
 
-<div class="output_area"><div class="prompt output_prompt">Out[154]:</div>
+<div class="output_area"><div class="prompt output_prompt">Out[15]:</div>
 
 
 <div class="output_text output_subarea output_execute_result">
-<pre>0.17462079171291159</pre>
+<pre>0.1693121693121693</pre>
 </div>
 
 </div>
@@ -600,7 +672,7 @@ div#notebook {
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[155]:</div>
+<div class="prompt input_prompt">In&nbsp;[16]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span class="mi">1</span><span class="o">-</span><span class="n">error</span> <span class="c">#accuracy</span>
@@ -614,11 +686,11 @@ div#notebook {
 <div class="output">
 
 
-<div class="output_area"><div class="prompt output_prompt">Out[155]:</div>
+<div class="output_area"><div class="prompt output_prompt">Out[16]:</div>
 
 
 <div class="output_text output_subarea output_execute_result">
-<pre>0.82537920828708844</pre>
+<pre>0.8306878306878307</pre>
 </div>
 
 </div>
@@ -626,6 +698,38 @@ div#notebook {
 </div>
 </div>
 
+</div>
+<div class="cell border-box-sizing text_cell rendered">
+<div class="prompt input_prompt">
+</div>
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h2 id="Future-improvements">Future improvements<a class="anchor-link" href="#Future-improvements">&#182;</a></h2><ul>
+<li>Performance Metrics<ul>
+<li><a href="https://en.wikipedia.org/wiki/Receiver_operating_characteristic">ROC Curve</a></li>
+<li><a href="https://en.wikipedia.org/wiki/F1_score">F1 Score</a></li>
+</ul>
+</li>
+<li>Other model types/methods<ul>
+<li><a href="http://scikit-learn.org/stable/modules/svm.html">SVM</a></li>
+<li>Multi-layer peceptron</li>
+<li>Bayes</li>
+<li>Ensemble Methods/Boosting</li>
+</ul>
+</li>
+<li>Preprocessing<ul>
+<li>Dimensionality Reduction/PCA</li>
+</ul>
+</li>
+<li>Hyperparameter optimization<ul>
+<li>Number of past years considered</li>
+<li>Learning rate</li>
+</ul>
+</li>
+</ul>
+
+</div>
+</div>
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
