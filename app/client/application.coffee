@@ -1,22 +1,21 @@
 #Manage URL
 if Session.get("cur_page")==undefined
   start_url = window.location.href
-  Meteor.testURL = start_url
   unformatted_page = start_url.split("#")
   Meteor.baseUrl = unformatted_page[0]
   if unformatted_page.length > 1
-    #analytics.page(unformatted_page[1])
+    analytics.page(unformatted_page[1])
     formatted_page = unformatted_page[1].split('/').map((e)->e.split("_").join(" "))
     formatted_page.unshift("Brian Rayburn")
     Session.set("cur_page", formatted_page)
   else
-    #analytics.page("About")
+    analytics.page("About")
     Session.set("cur_page", ["Brian Rayburn", "About"])
 
 Tracker.autorun ->
   cur_page = Session.get("cur_page")
   urlized_cur_page = cur_page.slice(1,cur_page.length).map((e)->e.split(" ").join("_"))
-  #analytics.page(urlized_cur_page)
+  analytics.page(urlized_cur_page)
   window.location.href = Meteor.baseUrl+"#"+urlized_cur_page.join('/')
 
 Session.page_tree =
